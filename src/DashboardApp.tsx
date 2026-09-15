@@ -20,6 +20,14 @@ const courses = [
   { title: 'Visual Studies', accent: 'Archive', description: 'Keep reference work grouped into one calm surface.', status: 'Open', notes: 3 },
 ];
 
+const navItems = [
+  { label: 'Home', icon: Home },
+  { label: 'Courses', icon: Folder },
+  { label: 'Notes', icon: ListChecks },
+  { label: 'Layers', icon: Layers3 },
+  { label: 'More', icon: Gauge },
+];
+
 function GlassEngineBackdrop() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const refs = useRef<{ renderer: THREE.WebGLRenderer; material: THREE.ShaderMaterial; raf: number; texture: THREE.Texture | null } | null>(null);
@@ -182,16 +190,10 @@ export default function DashboardApp() {
       </main>
 
       <nav className="dashboard-bottom-nav glass-card" aria-label="Dashboard navigation">
-        {[
-          ['Home', Home],
-          ['Courses', Folder],
-          ['Notes', ListChecks],
-          ['Layers', Layers3],
-          ['More', Gauge],
-        ].map(([label, Icon]) => (
-          <button key={label as string} type="button" className={`dashboard-nav-item ${activeNav === label ? 'active' : ''}`} onClick={() => setActiveNav(label as string)}>
+        {navItems.map(({ label, icon: Icon }) => (
+          <button key={label} type="button" className={`dashboard-nav-item ${activeNav === label ? 'active' : ''}`} onClick={() => setActiveNav(label)}>
             <Icon size={18} />
-            <span>{label as string}</span>
+            <span>{label}</span>
           </button>
         ))}
       </nav>
