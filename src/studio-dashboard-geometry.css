@@ -1,0 +1,301 @@
+/*
+ * Studio dashboard geometry audit.
+ * Source of truth: Mobile-liquid-glass DashboardResponsive.css + dashboard-phase1.css.
+ * Scope is deliberately limited to glass surface size, text size, alignment, and
+ * vertical spacing. Existing Studio features and glass shader remain untouched.
+ */
+
+/* Desktop source geometry: dashboard shell is capped at 980px and the major
+   dashboard rhythm uses compact 20–22px section spacing rather than the previous
+   48–64px Studio gaps. */
+#studio-view-root > main {
+  width: min(100%, 980px) !important;
+  max-width: 980px !important;
+  padding: 18px 18px 92px !important;
+  margin-inline: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 22px !important;
+}
+
+#studio-view-root > main > section {
+  margin: 0 !important;
+}
+
+/* Welcome glass: dashboard-sized rather than the previous oversized Studio hero. */
+#studio-top-banner {
+  width: 100% !important;
+  min-height: 0 !important;
+  padding: 22px 24px !important;
+  border-radius: 23px !important;
+  gap: 20px !important;
+}
+
+#studio-top-banner h1 {
+  font-size: 34px !important;
+  line-height: 1.06 !important;
+  letter-spacing: -0.035em !important;
+}
+
+#studio-top-banner .text-sm,
+#studio-top-banner .md\:text-base {
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+}
+
+/* Showcase glass follows the dashboard quick-action vertical rhythm. */
+#liquid-glass-showcase-bar {
+  margin: 0 !important;
+  min-height: 0 !important;
+  padding: 12px !important;
+  border-radius: 19px !important;
+  gap: 9px !important;
+}
+
+/* Study tools: dashboard quick-action geometry. */
+#studio-view-root [aria-label="Study Tools"] > div:last-child {
+  gap: 9px !important;
+}
+
+#card-study-hub,
+#card-overview,
+#card-pomodoro {
+  min-height: 86px !important;
+  height: 86px !important;
+  padding: 12px !important;
+  border-radius: 19px !important;
+  gap: 9px !important;
+}
+
+#card-study-hub h3,
+#card-overview h3,
+#card-pomodoro h3 {
+  font-size: 13px !important;
+  line-height: 1.15 !important;
+}
+
+#card-study-hub p,
+#card-overview p,
+#card-pomodoro p {
+  font-size: 10px !important;
+  line-height: 1.35 !important;
+  margin-top: 3px !important;
+}
+
+#card-study-hub > div:first-child,
+#card-overview > div:first-child,
+#card-pomodoro > div:first-child {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 13px !important;
+}
+
+#card-study-hub > div:first-child svg,
+#card-overview > div:first-child svg,
+#card-pomodoro > div:first-child svg {
+  width: 22px !important;
+  height: 22px !important;
+}
+
+/* Course section heading: source dashboard uses a 22px top / 11px bottom rhythm. */
+#studio-view-root [aria-label="Course Folders"] {
+  padding-top: 0 !important;
+}
+
+#studio-view-root [aria-label="Course Folders"] > div:first-child {
+  margin: 22px 0 11px !important;
+}
+
+#studio-view-root [aria-label="Course Folders"] > div:first-child > div:nth-child(2) > div:first-child > span:last-child {
+  font-size: 16px !important;
+  line-height: 1.15 !important;
+}
+
+/* Large Studio glass panels use the dashboard's compact course-surface scale. */
+#workspace-activity-card,
+#workspace-analytics-card,
+#workspace-timeline-card,
+#workspace-optics-station {
+  border-radius: 23px !important;
+  padding: 17px !important;
+  min-height: 190px !important;
+}
+
+#workspace-activity-card {
+  min-height: 250px !important;
+}
+
+#workspace-activity-card h2,
+#workspace-analytics-card h2,
+#workspace-timeline-card h2,
+#workspace-optics-station h2 {
+  font-size: 18px !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* Nested activity items use the same compact dashboard text scale. */
+#workspace-activity-card [class*="rounded-[24px]"] h3,
+#workspace-timeline-card h3 {
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+}
+
+#workspace-activity-card [class*="rounded-[24px]"] p,
+#workspace-timeline-card p {
+  font-size: 9px !important;
+  line-height: 1.35 !important;
+}
+
+@media (max-width: 700px) {
+  #studio-view-root > main {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 8px 8px 88px !important;
+    gap: 17px !important;
+  }
+
+  #studio-top-banner {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: start !important;
+    gap: 10px !important;
+    padding: 15px !important;
+    border-radius: 23px !important;
+  }
+
+  #studio-top-banner h1 {
+    font-size: clamp(25px, 7.5vw, 34px) !important;
+    line-height: 1.06 !important;
+  }
+
+  #studio-top-banner .text-sm,
+  #studio-top-banner .md\:text-base {
+    font-size: 11px !important;
+    line-height: 1.45 !important;
+  }
+
+  #liquid-glass-showcase-bar {
+    padding: 12px !important;
+    border-radius: 19px !important;
+  }
+
+  #card-study-hub,
+  #card-overview,
+  #card-pomodoro {
+    min-height: 86px !important;
+    height: 86px !important;
+    padding: 12px !important;
+    border-radius: 19px !important;
+  }
+
+  #workspace-activity-card,
+  #workspace-analytics-card,
+  #workspace-timeline-card,
+  #workspace-optics-station {
+    padding: 14px !important;
+    border-radius: 23px !important;
+    min-height: 190px !important;
+  }
+
+  #workspace-activity-card {
+    min-height: 250px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  #studio-view-root > main {
+    padding: 8px 8px 88px !important;
+    gap: 16px !important;
+  }
+
+  #studio-top-banner {
+    padding: 12px !important;
+    border-radius: 20px !important;
+  }
+
+  #studio-top-banner h1 {
+    font-size: clamp(24px, 8vw, 31px) !important;
+  }
+
+  #studio-top-banner .text-sm,
+  #studio-top-banner .md\:text-base {
+    font-size: 12px !important;
+  }
+
+  #card-study-hub,
+  #card-overview,
+  #card-pomodoro {
+    min-height: 76px !important;
+    height: 76px !important;
+    padding: 12px !important;
+    border-radius: 19px !important;
+  }
+
+  #card-study-hub h3,
+  #card-overview h3,
+  #card-pomodoro h3 {
+    font-size: 12.5px !important;
+  }
+
+  #card-study-hub p,
+  #card-overview p,
+  #card-pomodoro p {
+    font-size: 9.5px !important;
+  }
+
+  #card-study-hub > div:first-child,
+  #card-overview > div:first-child,
+  #card-pomodoro > div:first-child {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 13px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  #studio-view-root > main {
+    padding-inline: 6px !important;
+    gap: 14px !important;
+  }
+
+  #studio-top-banner {
+    padding: 10px !important;
+    border-radius: 18px !important;
+  }
+
+  #studio-top-banner h1 {
+    font-size: 23px !important;
+  }
+
+  #studio-top-banner .text-sm,
+  #studio-top-banner .md\:text-base {
+    font-size: 10.5px !important;
+  }
+
+  #card-study-hub,
+  #card-overview,
+  #card-pomodoro {
+    min-height: 72px !important;
+    height: 72px !important;
+    padding: 10px !important;
+  }
+
+  #workspace-activity-card,
+  #workspace-analytics-card,
+  #workspace-timeline-card,
+  #workspace-optics-station {
+    padding: 12px !important;
+    border-radius: 20px !important;
+  }
+}
+
+@media (max-width: 330px) {
+  #card-study-hub,
+  #card-overview,
+  #card-pomodoro {
+    min-height: 70px !important;
+    height: 70px !important;
+    padding: 10px !important;
+  }
+}
