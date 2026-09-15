@@ -38,7 +38,7 @@
 }
 
 #studio-top-banner .text-sm,
-#studio-top-banner .md\:text-base {
+#studio-top-banner .md\\:text-base {
   font-size: 12px !important;
   line-height: 1.45 !important;
 }
@@ -147,6 +147,56 @@
   line-height: 1.35 !important;
 }
 
+/* -------------------------------------------------------------------------- */
+/* Welcome-glass surface normalization                                        */
+/*                                                                              */
+/* The WebGL compositor is the single physical glass layer. The old Studio   */
+/* surfaces also carried CSS background, border, shadow and backdrop-blur      */
+/* layers, which doubled the glass and made the surfaces look different from   */
+/* the Welcome glass. Remove those duplicate surface layers while preserving  */
+/* all foreground content and controls.                                        */
+/* -------------------------------------------------------------------------- */
+#studio-top-banner,
+#liquid-glass-showcase-bar,
+#card-study-hub,
+#card-overview,
+#card-pomodoro,
+#workspace-activity-card,
+#workspace-analytics-card,
+#workspace-timeline-card,
+#workspace-optics-station,
+#studio-bottom-dock {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Remove decorative glass-overlays that duplicated the Welcome edge layer. */
+#studio-top-banner > .absolute,
+#card-study-hub > .absolute,
+#card-overview > .absolute,
+#card-pomodoro > .absolute,
+#workspace-activity-card > .absolute,
+#workspace-analytics-card > .absolute,
+#workspace-timeline-card > .absolute,
+#workspace-optics-station > .absolute {
+  display: none !important;
+}
+
+/* The showcase bar previously added a CSS blur layer of its own. */
+#liquid-glass-showcase-bar {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Bottom dock: keep its foreground controls but let the shared WebGL surface
+   provide the physical glass treatment. */
+#studio-bottom-dock {
+  overflow: visible !important;
+}
+
 @media (max-width: 700px) {
   #studio-view-root > main {
     width: 100% !important;
@@ -170,7 +220,7 @@
   }
 
   #studio-top-banner .text-sm,
-  #studio-top-banner .md\:text-base {
+  #studio-top-banner .md\\:text-base {
     font-size: 11px !important;
     line-height: 1.45 !important;
   }
@@ -219,7 +269,7 @@
   }
 
   #studio-top-banner .text-sm,
-  #studio-top-banner .md\:text-base {
+  #studio-top-banner .md\\:text-base {
     font-size: 12px !important;
   }
 
@@ -269,7 +319,7 @@
   }
 
   #studio-top-banner .text-sm,
-  #studio-top-banner .md\:text-base {
+  #studio-top-banner .md\\:text-base {
     font-size: 10.5px !important;
   }
 
