@@ -1,0 +1,6 @@
+{
+  "name": "Liquid Glass For the Web",
+  "description": "Interactive Liquid Glass optical simulation with real-time WebGL shader and SVG displacement map refraction.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
