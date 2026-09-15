@@ -3,54 +3,74 @@ import * as THREE from 'three';
 import { hexToRgb } from './lib/svgGlassMath';
 import { vertexShader, fragmentShader } from './lib/webglGlassShader';
 import { SvgGlass } from './components/SvgGlass';
-
-interface BgTemplate {
-  label: string;
-  thumb?: string;
-  url: string;
-}
-
-const TEMPLATES: BgTemplate[] = [
-  {
-    label: 'Interior',
-    thumb: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=200&auto=format&fit=crop',
-    url: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop',
-  },
-  {
-    label: 'Living Room',
-    thumb: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDpqTFc884FyMsQhl9lwUt32PFm3dZece4gVanjFehViV9s7KCfEK0e8_SaZf3aknQlPSB62rfFykmn7hJHsN063jFhhSEoTxgYjK4SrD0NVKLq6csnTGphx6-PlqBQJbs--1FlhR_cxo-930lt1zpmbxgzpn8GInD3twDZKIOHDxnAlpQ83VPkgmV1ARPuJL7dpgdhAjV-WarCfim6xKBGZOwZU2w9iHkz7C7mi9lTN2SX4ka3OEjgUA',
-    url: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDpqTFc884FyMsQhl9lwUt32PFm3dZece4gVanjFehViV9s7KCfEK0e8_SaZf3aknQlPSB62rfFykmn7hJHsN063jFhhSEoTxgYjK4SrD0NVKLq6csnTGphx6-PlqBQJbs--1FlhR_cxo-930lt1zpmbxgzpn8GInD3twDZKIOHDxnAlpQ83VPkgmV1ARPuJL7dpgdhAjV-WarCfim6xKBGZOwZU2w9iHkz7C7mi9lTN2SX4ka3OEjgUA',
-  },
-  {
-    label: '1',
-    thumb: 'https://liquid-glass-eta.vercel.app/backgrounds/image1.jpg',
-    url: 'https://liquid-glass-eta.vercel.app/backgrounds/image1.jpg',
-  },
-  {
-    label: '2',
-    thumb: 'https://liquid-glass-eta.vercel.app/backgrounds/image2.jpg',
-    url: 'https://liquid-glass-eta.vercel.app/backgrounds/image2.jpg',
-  },
-  {
-    label: '3',
-    thumb: 'https://liquid-glass-eta.vercel.app/backgrounds/image3.jpg',
-    url: 'https://liquid-glass-eta.vercel.app/backgrounds/image3.jpg',
-  },
-  {
-    label: '4',
-    thumb: 'https://liquid-glass-eta.vercel.app/backgrounds/image4.jpg',
-    url: 'https://liquid-glass-eta.vercel.app/backgrounds/image4.jpg',
-  },
-];
-
-const DEFAULT_BG = TEMPLATES[0].url;
+import { StudioView } from './components/studio/StudioView';
+import { Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import {
+  ALL_TEMPLATES,
+  SHOWCASE_TEMPLATES,
+  CLASSIC_TEMPLATES,
+  DEFAULT_BG,
+  BgTemplate,
+} from './data/backgroundTemplates';
 
 export default function App() {
+  // Dual-mode routing: 'classic' vs 'studio'
+  const [viewMode, setViewMode] = useState<'classic' | 'studio'>(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      const search = window.location.search;
+      const hash = window.location.hash;
+      if (path.includes('/studio') || hash.includes('studio') || search.includes('studio')) {
+        return 'studio';
+      }
+      try {
+        const saved = localStorage.getItem('liquid-glass-view-mode');
+        if (saved === 'studio') return 'studio';
+      } catch (e) {}
+    }
+    return 'classic';
+  });
+
   const [mode, setMode] = useState<'webgl' | 'svg'>('webgl');
   const [panelOpen, setPanelOpen] = useState(false);
   const [currentBg, setCurrentBg] = useState<string>(DEFAULT_BG);
   const [customBgInput, setCustomBgInput] = useState('');
   const [customThumbUrl, setCustomThumbUrl] = useState<string | null>(null);
+
+  const switchViewMode = useCallback((newMode: 'classic' | 'studio') => {
+    setViewMode(newMode);
+    try {
+      localStorage.setItem('liquid-glass-view-mode', newMode);
+      const targetUrl = newMode === 'studio' ? '/studio' : '/';
+      if (window.location.pathname !== targetUrl) {
+        window.history.pushState({ view: newMode }, '', targetUrl);
+      }
+    } catch (err) {
+      console.warn('History pushState error:', err);
+    }
+  }, []);
+
+  // Popstate & hashchange listener for browser forward/back buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      const search = window.location.search;
+      const hash = window.location.hash;
+      if (path.includes('/studio') || hash.includes('studio') || search.includes('studio')) {
+        setViewMode('studio');
+      } else {
+        setViewMode('classic');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    window.addEventListener('hashchange', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('hashchange', handlePopState);
+    };
+  }, []);
 
   // WebGL State (matching webgl.html)
   const [glState, setGlState] = useState({
@@ -103,8 +123,12 @@ export default function App() {
 
   // Sync background on document.body for seamless native backdrop sampling
   useEffect(() => {
-    document.body.style.background = `url('${currentBg}') center/cover no-repeat`;
-  }, [currentBg]);
+    if (viewMode === 'classic') {
+      document.body.style.background = `url('${currentBg}') center/cover no-repeat`;
+    } else {
+      document.body.style.background = '#040714';
+    }
+  }, [currentBg, viewMode]);
 
   // ----------------------------------------------------
   // WebGL Setup and Render Loop
@@ -285,17 +309,83 @@ export default function App() {
   };
 
   return (
-    <div className="relative w-full h-full overflow-hidden select-none">
-      {/* Background layer for both WebGL and SVG */}
-      <div
-        id="bg"
-        style={{
-          backgroundImage: `url('${currentBg}')`,
-          backgroundPosition: 'center',
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-        }}
-      />
+    <div className="relative w-full h-full overflow-hidden select-none bg-black">
+      <AnimatePresence mode="wait">
+        {viewMode === 'studio' ? (
+          <motion.div
+            key="studio-view"
+            initial={{ opacity: 0, scale: 0.99 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.99 }}
+            transition={{ duration: 0.24, ease: 'easeOut' }}
+            className="w-full h-full"
+          >
+            <StudioView
+              currentBg={currentBg}
+              allTemplates={ALL_TEMPLATES}
+              onSelectBg={(url) => setCurrentBg(url)}
+              glParams={{
+                thick: glState.thick,
+                bezel: glState.bezel,
+                ior: glState.ior,
+                blur: glState.blur,
+                spec: glState.spec,
+                tint: glState.tint,
+                shadow: glState.shadow,
+              }}
+              onReturnToClassic={() => switchViewMode('classic')}
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="classic-view"
+            initial={{ opacity: 0, scale: 0.99 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.99 }}
+            transition={{ duration: 0.24, ease: 'easeOut' }}
+            className="relative w-full h-full overflow-hidden select-none"
+          >
+            {/* TOP NAVIGATION BAR FOR CLASSIC VIEW */}
+            <header
+              id="classic-top-navbar"
+              className="fixed top-3.5 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-4 py-2 rounded-2xl border border-white/20 shadow-2xl transition-all select-none pointer-events-auto"
+              style={{
+                background: 'rgba(18, 20, 32, 0.75)',
+                backdropFilter: 'blur(30px) saturate(1.4)',
+                WebkitBackdropFilter: 'blur(30px) saturate(1.4)',
+                boxShadow:
+                  '0 10px 30px -5px rgba(0, 0, 0, 0.5), inset 0 1px 1px 0 rgba(255, 255, 255, 0.3)',
+              }}
+            >
+              <div className="flex items-center gap-2 pr-2 border-r border-white/15">
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#22d3ee]" />
+                <span className="text-[11px] font-bold tracking-widest text-slate-200 uppercase">
+                  Liquid Glass
+                </span>
+              </div>
+
+              {/* High-visibility glass toggle button */}
+              <button
+                id="btn-liquid-glass-studio"
+                onClick={() => switchViewMode('studio')}
+                className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600/90 to-purple-600/90 hover:from-blue-500 hover:to-purple-500 border border-white/30 text-xs font-semibold text-white shadow-lg shadow-purple-500/25 transition-all active:scale-95 cursor-pointer"
+                title="Switch to Liquid Glass Studio Mode"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
+                <span>Liquid Glass Studio</span>
+              </button>
+            </header>
+
+            {/* Background layer for both WebGL and SVG */}
+            <div
+              id="bg"
+              style={{
+                backgroundImage: `url('${currentBg}')`,
+                backgroundPosition: 'center',
+                backgroundSize: 'cover',
+                backgroundRepeat: 'no-repeat',
+              }}
+            />
 
       {/* WEBGL MODE */}
       {mode === 'webgl' && (
@@ -799,13 +889,37 @@ export default function App() {
           )}
 
           {/* BACKGROUND PICKER (Identical in both modes) */}
-          <h2>Background</h2>
+          <h2>Liquid Glass Backgrounds</h2>
           <div id="bg-picker">
+            <p className="text-[11px] font-semibold text-cyan-300/90 uppercase tracking-wider mb-2">
+              WebGL Liquid Glass Showcases (5 Presets)
+            </p>
+            <div className="bg-thumbs mb-4">
+              {SHOWCASE_TEMPLATES.map((tmpl) => (
+                <div key={tmpl.id} className="relative group">
+                  <img
+                    className={`bg-thumb ${currentBg === tmpl.url ? 'active ring-2 ring-cyan-400' : ''}`}
+                    src={tmpl.thumb || tmpl.url}
+                    alt={tmpl.label}
+                    title={`${tmpl.label} (${tmpl.badge})`}
+                    draggable={false}
+                    onClick={() => setCurrentBg(tmpl.url)}
+                  />
+                  <span className="block text-[9px] text-center text-slate-300 truncate max-w-[56px] mt-0.5">
+                    {tmpl.badge}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              Classic Presets
+            </p>
             <div className="bg-thumbs">
-              {TEMPLATES.map((tmpl) => (
+              {CLASSIC_TEMPLATES.map((tmpl) => (
                 <img
-                  key={tmpl.label}
-                  className={`bg-thumb ${currentBg === tmpl.url ? 'active' : ''}`}
+                  key={tmpl.id}
+                  className={`bg-thumb ${currentBg === tmpl.url ? 'active ring-2 ring-white/60' : ''}`}
                   src={tmpl.thumb || tmpl.url}
                   alt={tmpl.label}
                   title={tmpl.label}
@@ -885,7 +999,20 @@ export default function App() {
             </button>
           </>
         )}
+
+        <button
+          className="switch-btn flex items-center gap-1.5 ml-2 border border-purple-400/30 text-purple-200 hover:text-white hover:bg-purple-600/30"
+          onClick={() => switchViewMode('studio')}
+          title="Open Liquid Glass Studio"
+          id="btn-switch-studio-dock"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
+          <span>Studio Mode</span>
+        </button>
       </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
